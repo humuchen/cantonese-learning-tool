@@ -12,6 +12,7 @@ class CantoneseApp {
     this.cantoneseVoice = null;
     
     this.initElements();
+    this.loadTheme();
     this.bindEvents();
     this.initToneTable();
     this.loadVoices();
@@ -26,6 +27,7 @@ class CantoneseApp {
     this.slowPlayBtn = document.getElementById('slowPlayBtn');
     this.exportCsvBtn = document.getElementById('exportCsvBtn');
     this.exportAnkiBtn = document.getElementById('exportAnkiBtn');
+    this.themeToggle = document.getElementById('themeToggle');
     
     // 语音状态提示
     this.voiceStatusEl = document.createElement('div');
@@ -54,6 +56,7 @@ class CantoneseApp {
     this.slowPlayBtn.addEventListener('click', () => this.playSentence(0.5));
     this.exportCsvBtn.addEventListener('click', () => this.exportCSV());
     this.exportAnkiBtn.addEventListener('click', () => this.exportAnki());
+    this.themeToggle.addEventListener('click', () => this.toggleTheme());
     
     document.querySelectorAll('.example-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -175,8 +178,31 @@ class CantoneseApp {
     const statusText = document.getElementById('voiceStatusText');
     if (statusText) {
       statusText.textContent = msg;
-      statusText.style.color = msg.includes('✅') ? '#166534' : 
+      statusText.style.color = msg.includes('✅') ? '#166534' :
                                msg.includes('⚠️') ? '#d97706' : '#991b1b';
+    }
+  }
+
+  toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+
+    if (isDark) {
+      html.removeAttribute('data-theme');
+      this.themeToggle.textContent = '🌙 深色模式';
+      localStorage.setItem('theme', 'light');
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      this.themeToggle.textContent = '☀️ 浅色模式';
+      localStorage.setItem('theme', 'dark');
+    }
+  }
+
+  loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      this.themeToggle.textContent = '☀️ 浅色模式';
     }
   }
 
