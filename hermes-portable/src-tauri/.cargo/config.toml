@@ -1,4 +1,0 @@
-# 放在 apps/bootstrap-installer/src-tauri/.cargo/config.toml
-# 静态链接 MSVC 运行库，目标机无需安装 "Visual C++ Redistributable"
-[build]
-rustflags = ["-C", "target-feature=+crt-static"]
