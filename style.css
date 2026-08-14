@@ -234,6 +234,55 @@ header h1 {
   margin-bottom: 4px;
 }
 
+.char-pinyin {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 2px;
+}
+
+.pinyin-initial {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.pinyin-final {
+  color: var(--text);
+}
+
+.pinyin-tone {
+  color: var(--text-light);
+  font-size: 0.75rem;
+}
+
+.char-meta {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--text-light);
+  font-family: 'Courier New', monospace;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.meta-initial {
+  color: var(--primary);
+}
+
+.meta-final {
+  color: var(--text-light);
+}
+
+.meta-tone {
+  color: var(--tone1);
+  font-weight: 600;
+}
+
 .char-jyutping {
   font-size: 0.9rem;
   color: var(--text-light);
@@ -556,4 +605,193 @@ header h1 {
   animation: pulse 0.3s ease-in-out;
   border-color: var(--primary) !important;
   background: #eff6ff !important;
+}
+
+/* ============================================================
+   九声六调卡片样式
+   ============================================================ */
+.nine-tones-section {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.nine-tones-section h2 {
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.tones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tone-card {
+  background: var(--bg);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  transition: all 0.2s;
+}
+
+.tone-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.tone-card.entering {
+  border-color: #f59e0b;
+}
+
+.tone-card.entering:hover {
+  border-color: #d97706;
+}
+
+.tone-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--primary);
+  color: white;
+}
+
+.tone-group {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.tone-values {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.tone-card-body {
+  padding: 12px;
+}
+
+.tone-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.tone-item:last-child {
+  margin-bottom: 0;
+}
+
+.tone-item:hover {
+  background: var(--card-bg);
+}
+
+.tone-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.tone-item strong {
+  font-size: 0.95rem;
+  color: var(--text);
+  min-width: 50px;
+}
+
+.tone-item span {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.tone-item p {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin: 0;
+  flex: 1;
+}
+
+.knowledge-box {
+  background: var(--bg);
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+}
+
+.knowledge-box h3 {
+  margin-bottom: 12px;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+.knowledge-box p {
+  margin-bottom: 12px;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.knowledge-box ul {
+  margin: 12px 0;
+  padding-left: 20px;
+  color: var(--text-light);
+}
+
+.knowledge-box li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.knowledge-box .tip {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+[data-theme="dark"] .knowledge-box .tip {
+  background: #422006;
+  color: #fcd34d;
+}
+
+/* 响应式 */
+@media (max-width: 640px) {
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  .input-wrapper {
+    flex-direction: column;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+
+  .tone-row {
+    flex-wrap: wrap;
+  }
+
+  .export-buttons {
+    flex-direction: column;
+  }
+
+  .tones-grid {
+    grid-template-columns: 1fr;
+  }
 }

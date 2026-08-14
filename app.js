@@ -259,35 +259,54 @@ class CantoneseApp {
 
   getToneNumber(jyutping) {
     if (!jyutping) return 0;
-    const match = jyutping.match(/(\d)$/);
+    const match = jyutping.match(/(\d+)$/);
     return match ? parseInt(match[1]) : 0;
+  }
+
+  parseJyutping(jyutping) {
+    return parseJyutping(jyutping);
   }
 
   renderVisual() {
     this.visualOutput.innerHTML = '';
-    
+
     this.currentJyutping.forEach((item, index) => {
       const card = document.createElement('div');
       card.className = 'char-card';
       card.dataset.index = index;
       card.dataset.char = item.char;
-      
-      const tone = this.getToneNumber(item.jyutping);
+
+      const parsed = this.parseJyutping(item.jyutping);
+      const tone = parsed.tone;
       const toneColor = tone ? `var(--tone${tone})` : '#94a3b8';
-      
+
+      // 构建拼音显示：声母 + 韵母 + 声调
+      const jyutpingDisplay = parsed.initial
+        ? `${parsed.initial}${parsed.final}${tone}`
+        : (parsed.final ? `${parsed.final}${tone}` : '—');
+
       card.innerHTML = `
         <div class="char-hanzi" style="color: ${tone ? toneColor : 'var(--text)'}">${item.char}</div>
-        <div class="char-jyutping">${item.jyutping || '—'}</div>
+        <div class="char-pinyin">
+          ${parsed.initial ? `<span class="pinyin-initial">${parsed.initial}</span>` : ''}
+          ${parsed.final ? `<span class="pinyin-final">${parsed.final}</span>` : ''}
+          ${tone ? `<span class="pinyin-tone tone-${tone}">${tone}</span>` : '<span class="pinyin-tone">—</span>'}
+        </div>
+        <div class="char-meta">
+          <span class="meta-initial">${parsed.initial || '∅'}</span>
+          <span class="meta-final">${parsed.final || '—'}</span>
+          <span class="meta-tone tone-${tone}">T${tone}</span>
+        </div>
         ${tone ? `<div class="char-tone-indicator tone-${tone}"></div>` : ''}
       `;
-      
+
       // 点击发音
       card.addEventListener('click', () => {
         this.speak(item.char);
         card.classList.add('playing');
         setTimeout(() => card.classList.remove('playing'), 300);
       });
-      
+
       this.visualOutput.appendChild(card);
     });
   }

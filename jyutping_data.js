@@ -747,3 +747,193 @@ const PINYIN_MAP = {
   "胸": "xiong1", "肩": "jian1", "喉": "hou2", "骨": "gu3", "肉": "rou4",
   "血": "hyut3", "皮": "pai4",
 };
+
+// ============================================================
+// 声母表（Jyutping 初始辅音）
+// ============================================================
+const INITIALS = {
+  // 无声母（零声母）
+  "": "",
+  // 唇音
+  "b": "b", "p": "p", "m": "m", "f": "f",
+  // 舌音
+  "d": "d", "t": "t", "n": "n", "l": "l",
+  // 牙音
+  "g": "g", "k": "k", "ng": "ng", "h": "h",
+  // 齿音
+  "z": "z", "c": "c", "s": "s",
+  // 腭音
+  "j": "j", "y": "y",
+  // 其他
+  "w": "w", "jw": "jw"
+};
+
+// ============================================================
+// 韵母表（含介音和韵尾）
+// ============================================================
+const FINALS = {
+  // 单元音
+  "a": "a", "e": "e", "o": "o", "u": "u", "i": "i", "ui": "ui",
+  // 复合元音
+  "aa": "aa", "ai": "ai", "au": "au", "ap": "ap", "at": "at", "ak": "ak",
+  "ei": "ei", "eo": "eo", "ep": "ep",
+  "eu": "eu", "ek": "ek",
+  "im": "im", "in": "in", "ing": "ing", "ik": "ik",
+  "um": "um", "un": "un", "ung": "ung", "uk": "uk",
+  "yun": "yun", "yut": "yut",
+  "am": "am", "an": "an", "ang": "ang", "ak": "ak",
+  "om": "om", "on": "on", "ong": "ong",
+  "eoi": "eoi", "eok": "eok",
+  "oeng": "oeng",
+  "aai": "aai", "aau": "aau", "aak": "aak",
+  "aam": "aam", "aan": "aan", "aang": "aang",
+  "aai": "aai", "aau": "aau",
+  // 特殊韵母
+  "jit": "jit", "jat": "jat", "jip": "jip",
+  "eot": "eot", "eok": "eok",
+  "oet": "oet", "oek": "oek",
+  "yit": "yit", "yut": "yut",
+  "eoi": "eoi",
+  "yun": "yun", "yut": "yut",
+  // 有 ng 韵尾
+  "eng": "eng", "ong": "ong", "ung": "ung",
+  // 有 n 韵尾
+  "en": "en", "in": "in", "un": "un", "on": "on",
+  // 有 m 韵尾
+  "em": "em", "im": "im", "um": "um", "am": "am",
+  // 有 p/t/k 韵尾
+  "ep": "ep", "ip": "ip", "up": "up", "ap": "ap",
+  "et": "et", "it": "it", "ut": "ut", "at": "at", "ot": "ot",
+  "ek": "ek", "ik": "ik", "uk": "uk", "ak": "ak"
+};
+
+// ============================================================
+// 九声六调数据
+// 粤语有九个声调，但只有六个调值（三阴三阳）
+// ============================================================
+const NINE_TONES = {
+  // 阴调组（高区）
+  "1": {
+    number: 1,
+    name: "阴平",
+    nameEn: "High Level",
+    value: "55",
+    color: "#ef4444",
+    example: "诗 si1",
+    description: "高而平的调子，像唱歌时的高音保持",
+    pitch: "🔊 高平"
+  },
+  "2": {
+    number: 2,
+    name: "阴上",
+    nameEn: "High Rising",
+    value: "35",
+    color: "#f97316",
+    example: "匙 ci4",
+    description: "从中音升到高音，像疑问句的语气",
+    pitch: "🔊 高升"
+  },
+  "3": {
+    number: 3,
+    name: "阴去",
+    nameEn: "High Falling",
+    value: "33",
+    color: "#eab308",
+    example: "试 si3",
+    description: "中平调，稳定平稳",
+    pitch: "🔊 中平"
+  },
+  // 中调组
+  "4": {
+    number: 4,
+    name: "阳平",
+    nameEn: "Low Falling",
+    value: "21",
+    color: "#22c55e",
+    example: "是 si4",
+    description: "从低音降到更低，像肯定的陈述",
+    pitch: "🔊 低降"
+  },
+  "5": {
+    number: 5,
+    name: "阳上",
+    nameEn: "Low Rising",
+    value: "23",
+    color: "#3b82f6",
+    example: "屎 si5",
+    description: "从低音升到中音",
+    pitch: "🔊 低升"
+  },
+  "6": {
+    number: 6,
+    name: "阳去",
+    nameEn: "Low Level",
+    value: "22",
+    color: "#8b5cf6",
+    example: "事 si6",
+    description: "低而平，像休息时的自然语调",
+    pitch: "🔊 低平"
+  },
+  // 入声组（短促调）
+  "1 (入)": {
+    number: 1,
+    name: "阴入",
+    nameEn: "High Entering",
+    value: "5",
+    color: "#dc2626",
+    example: "色 sik1",
+    description: "高音短促，以 p/t/k 结尾",
+    pitch: "🔊 高短"
+  },
+  "3 (入)": {
+    number: 3,
+    name: "中入",
+    nameEn: "Mid Entering",
+    value: "3",
+    color: "#d97706",
+    example: "湿 sap6",
+    description: "中音短促，以 p/t/k 结尾",
+    pitch: "🔊 中短"
+  },
+  "6 (入)": {
+    number: 6,
+    name: "阳入",
+    nameEn: "Low Entering",
+    value: "2",
+    color: "#7c3aed",
+    example: "白 baak6",
+    description: "低音短促，以 p/t/k 结尾",
+    pitch: "🔊 低短"
+  }
+};
+
+// ============================================================
+// Jyutping 解析器
+// ============================================================
+function parseJyutping(jyutping) {
+  if (!jyutping) return { initial: '', final: '', tone: 0 };
+
+  // 提取声调数字（最后一个字符）
+  const toneMatch = jyutping.match(/(\d+)$/);
+  const tone = toneMatch ? parseInt(toneMatch[1]) : 0;
+  const syllable = jyutping.replace(/\d+$/, '');
+
+  // 尝试匹配已知韵母（从长到短）
+  let matchedFinal = '';
+  const sortedFinals = Object.keys(FINALS).sort((a, b) => b.length - a.length);
+  for (const final of sortedFinals) {
+    if (syllable.endsWith(final)) {
+      matchedFinal = final;
+      break;
+    }
+  }
+
+  // 声母是剩余部分
+  const initial = syllable.slice(0, syllable.length - matchedFinal.length);
+
+  return { initial, final: matchedFinal, tone };
+}
+
+// ============================================================
+// 简体中文 -> 繁体中文 映射表
+// ============================================================
