@@ -43,6 +43,7 @@ const JYUTPING = {
   "嘛": "mɔ1", "囉": "lo1", "喂": "wai3", "唉": "aai3", "喔": "ok3",
   "啊": "a3", "呀": "aa1", "呢": "ni1", "個": "go3",
   "樣": "joeng6", "嘢": "je5",
+  "啲": "di1",
   "多謝": "do1 ze6", "唔該": "m4 gor1", "再見": "zoi3 gin3",
   "早安": "zou2 an1", "晚安": "aan1 je6", "唔該晒": "m4 gor1 syu3",
   "埋單": "maai4 daan1", "食飯未": "sik6 faan6 mei6", "邊度": "bin1 dou6",
