@@ -187,10 +187,10 @@ class CantoneseApp {
       return;
     }
 
-    // 简繁转换：简体输入 -> 繁体字典匹配
-    const traditionalText = convertSimplifiedToTraditional(text);
-    this.currentText = traditionalText;
-    this.currentJyutping = this.convertToJyutping(traditionalText);
+    // 三步转换：简体 → 繁体 → 粤语口语 → Jyutping标注
+    const cantoneseText = convertToCantonese(text);
+    this.currentText = cantoneseText;
+    this.currentJyutping = this.convertToJyutping(cantoneseText);
     this.renderVisual();
     this.resultSection.style.display = 'block';
     this.resultSection.classList.add('fade-in');
