@@ -1,0 +1,10 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+dist/
+*.tsbuildinfo
+.hermes/
+.hermes-portable/
+medical-aesthetics-agent/
+hermes-portable/

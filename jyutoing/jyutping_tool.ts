@@ -1,0 +1,546 @@
+#!/usr/bin/env node
+/**
+ * Cantonese Jyutping Tool (TypeScript)
+ * 功能：
+ *   1. 将任意文本批量转换为带声调数字的 Jyutping 标注
+ *   2. 导出为 CSV / Anki 牌组格式
+ *
+ * 依赖：无（纯 Node.js 标准库）
+ */
+
+import * as fs from 'fs';
+
+// ============================================================
+// 内置字典（高频字 + 词组）- 去重处理
+// ============================================================
+const JYUTPING: Record<string, string> = {
+  // 代词
+  "我": "ngo5", "你": "nei5", "佢": "kwai5", "他": "taa1", "她": "taa1", "它": "taa1",
+  "我哋": "ngo5 dei6", "你哋": "nei5 dei6", "佢哋": "kwai5 dei6",
+  "自己": "zi6 gei2", "大家": "daai6 gaa1", "邊個": "bin1 go3",
+
+  // 动词
+  "係": "hai6", "唔": "m4", "知": "zi1", "叫": "giu3", "去": "heoi3",
+  "睇": "tai2", "食": "sik6", "飲": "yam2", "買": "maai5", "俾": "bei2",
+  "見": "gin3", "行": "haang4", "返": "fan1", "着": "zoek3", "聽": "teng1",
+  "諗": "naam2", "問": "man6", "講": "gong2", "寫": "sie2", "讀": "douk6",
+  "玩": "waan5", "做": "zo3", "唱": "coeng3", "收": "sau1",
+  "開": "hoi1", "閂": "min1", "拎": "ling1", "攞": "lo5", "走": "zau2",
+  "起": "hei2", "落": "luk6", "過": "gwo3", "入": "jap6", "出": "ceot1",
+  "上": "soeng6", "下": "haa6", "睡": "seoi3", "瞓": "fan2", "醒": "seng2",
+  "生": "saang1", "死": "sei2", "病": "bing3",
+
+  // 名词
+  "日": "jat6", "夜": "je6", "天": "tin1", "間": "gān1", "時": "si4",
+  "邊": "bin1", "度": "dou6", "處": "cwai6", "地": "dei6", "月": "jyut6",
+  "年": "nin4", "歲": "sui3", "分": "fan1", "秒": "miu5", "刻": "hak1",
+
+  // 形容词
+  "好": "hou2", "唔好": "m4 hou2", "靚": "leung6", "醜": "cau2", "熱": "re3",
+  "凍": "dung6", "渴": "hut3", "餓": "o3", "累": "lui6", "飽": "bou2",
+  "濕": "saap6", "乾": "gon1", "輕": "hing1", "重": "zung6", "大": "daai6",
+  "細": "sai3", "多": "do1", "少": "siu2", "長": "cong4", "短": "dyun5",
+  "新": "san1", "舊": "gau3", "遠": "jyun5", "近": "zeon3", "高": "gou1",
+  "低": "dai1", "直": "zik6", "彎": "waan1", "硬": "ngeng5", "軟": "jyun5",
+  "滑": "waat6", "澀": "saap9", "苦": "hou2", "酸": "syun1", "甜": "tim4",
+  "辣": "lat6", "鮮": "sin1", "腥": "sing1", "香": "hiong1", "臭": "cau3",
+  "淡": "daam6", "濃": "nung4", "淨": "zing3", "濁": "jyuk6", "亂": "lyun6",
+  "齊": "cwai4", "同": "tung4", "唔同": "m4 tung4", "似": "ci5", "正": "zing3",
+  "勁": "ging3", "犀利": "haai1 lik6", "抵": "di2", "難": "gaan4", "易": "jik1",
+  "快": "faai3", "慢": "maam6", "穩": "wan2", "險": "him2", "安": "on1",
+  "危": "wai4", "富": "fu6", "窮": "kwing4", "貴": "goi3", "平": "pieng4",
+  "值": "zik6", "便": "bin6",
+
+  // 副词/连词
+  "咁": "gam3", "咁樣": "gam3 joeng6", "點": "den2", "點樣": "den2 joeng6",
+  "幾": "gei2", "幾多": "gei2 do1", "先": "sin1", "至": "zi3", "先至": "sin1 zi3",
+  "已經": "ji5 ging1", "未": "mei6", "未曾": "m4 cang4", "曾": "cang4",
+  "曾經": "cang4 ging1", "依然": "ji1 jin4", "再": "zoi3", "仲": "zung6",
+  "更加": "gaa3 zyo1", "都": "dou1", "全部": "cyun4 bou6", "分別": "fan1 beoi3",
+  "同樣": "toeng4 joeng6", "相同": "soeng1 tong4", "一樣": "jat1 joeng6",
+  "其他": "kei4 tai1", "每個": "mou6 go3", "任何": "jik1 ho6", "所有": "syu2 jau5",
+  "各種": "gam2 cong6",
+
+  // 疑问词
+  "乜嘢": "mah6 je5", "咩": "me1", "啫": "ze1", "喺": "hai2",
+
+  // 语气词
+  "啦": "laa1", "喇": "laa3", "㗎": "gaa3", "吖": "a1", "喎": "wɔ1",
+  "嘛": "mɔ1", "囉": "lo1", "喂": "wai3", "唉": "aai3", "喔": "ok3",
+  "啊": "a3", "呀": "aa1", "呢": "ni1", "個": "go3",
+
+  // 固定搭配
+  "多謝": "do1 ze6", "唔該": "m4 gor1", "再見": "zoi3 gin3",
+  "早安": "zou2 an1", "晚安": "aan1 je6", "唔該晒": "m4 gor1 syu3",
+  "埋單": "maai4 daan1", "食飯未": "sik6 faan6 mei6", "邊度": "bin1 dou6",
+  "咁好": "gam3 hou2", "點解": "den2 gae2", "幾時": "gei2 si4",
+  "唔使": "m4 sei3", "冇問題": "mou5 man6 tai4", "可以": "ho2 ji5",
+  "一定": "jat1 ding6", "可能": "mo4 ng4", "應該": "jing1 gai1",
+  "不如": "bat1 jyu4", "好似": "hou2 ci5", "因為": "jan1 wai6",
+  "所以": "sou2 ji6", "但是": "daai6 gam6", "或者": "waak6 ze2",
+  "而且": "ji3 qie2", "雖然": "syu1 jin4", "如果": "jyu4 gwo3",
+  "即使": "zik1 ging2", "無論": "man4 lat6", "而家": "ji4 gaa1",
+  "依家": "ji1 gaa1", "啱啱": "naam1 naam1",
+
+  // 身体部位
+  "手": "seu2", "腳": "gok3", "頭": "tau4", "面": "min6", "眼": "jyun5",
+  "耳": "jyi5", "鼻": "bai4", "嘴": "zeoi2", "牙": "jaa4", "舌": "sit6",
+  "頸": "gang2", "膊": "bo3", "心": "sam1", "肝": "gan1", "腸": "coeng4",
+  "肚": "dou6", "背": "bak3", "腿": "teoi2", "膝": "sap1", "腰": "jiu1",
+  "胸": "hung1", "肩": "gin1", "喉": "hau4", "骨": "gut3", "肉": "juk6",
+  "血": "hyut3", "皮": "pai4",
+};
+
+// 简单普通话拼音映射
+const PINYIN_MAP: Record<string, string> = {
+  "我": "wo3", "你": "ni3", "佢": "qu2", "他": "ta1", "她": "ta1", "它": "ta1",
+  "係": "shi4", "唔": "wu2", "知": "zhi1", "叫": "jiao4", "去": "qu4",
+  "睇": "ti4", "食": "shi2", "飲": "yin3", "買": "mai3", "俾": "bi3",
+  "見": "jian4", "行": "xing2", "返": "fan3", "着": "zhuo2", "聽": "ting1",
+  "諗": "nen3", "問": "wen4", "講": "jiang3", "寫": "xie3", "讀": "du2",
+  "玩": "wan2", "做": "zuo4", "唱": "chang4", "收": "shou1",
+  "開": "kai1", "閂": "guan1", "拎": "lin1", "攞": "luo3", "走": "zou3",
+  "起": "qi3", "落": "luo4", "過": "guo4", "入": "ru4", "出": "chu1",
+  "上": "shang4", "下": "xia4", "睡": "shui4", "瞓": "shui4", "醒": "xing3",
+  "生": "sheng1", "死": "si3", "病": "bing4",
+  "日": "ri4", "夜": "ye4", "天": "tian1", "間": "jian1", "時": "shi2",
+  "邊": "bian1", "度": "du4", "處": "chu4", "地": "di4", "月": "yue4",
+  "年": "nian2", "歲": "sui4", "分": "fen1", "秒": "miao3", "刻": "ke4",
+  "好": "hao3", "唔好": "bu4 hao3", "靚": "liang4", "醜": "chou3", "熱": "re4",
+  "凍": "dong4", "渴": "ke3", "餓": "e4", "累": "lei4", "飽": "bao3",
+  "濕": "shi1", "乾": "gan2", "輕": "qing1", "重": "zhong4", "大": "da4",
+  "細": "xi4", "多": "duo1", "少": "shao3", "長": "chang2", "短": "duan3",
+  "新": "xin1", "舊": "jiu4", "遠": "yuan3", "近": "jin4", "高": "gao1",
+  "低": "di1", "直": "zhi2", "彎": "wan1", "硬": "ying4", "軟": "ruan3",
+  "滑": "hua2", "澀": "se4", "苦": "ku3", "酸": "suan1", "甜": "tian2",
+  "辣": "la4", "鮮": "xian1", "腥": "xing1", "香": "xiang1", "臭": "chou4",
+  "淡": "dan4", "濃": "nong2", "淨": "jing4", "濁": "zhuo2", "亂": "luan4",
+  "齊": "qi2", "同": "tong2", "唔同": "bu4 tong2", "似": "si4", "正": "zheng4",
+  "勁": "jin4", "犀利": "xi1 li4", "抵": "di3", "難": "nan2", "易": "yi4",
+  "快": "kuai4", "慢": "man4", "穩": "wen3", "險": "xian3", "安": "an1",
+  "危": "wei2", "富": "fu4", "窮": "qiong2", "貴": "gui4", "平": "ping2",
+  "值": "zhi2", "便": "bian4",
+  "咁": "gan3", "咁樣": "gan3 yang4", "點": "dian3", "點樣": "dian3 yang4",
+  "幾": "ji3", "幾多": "ji3 duo1", "先": "xian1", "至": "zhi4", "先至": "xian1 zhi4",
+  "已經": "yi1 jing1", "未": "wei4", "未曾": "bu4 ceng2", "曾": "ceng2",
+  "曾經": "ceng2 jing1", "依然": "yi1 ran2", "再": "zai4", "仲": "zhong4",
+  "更加": "geng4 jia1", "都": "dou1", "全部": "quan2 bu4", "分別": "fen1 bie2",
+  "同樣": "tong2 yang4", "相同": "xiang1 tong2", "一樣": "yi1 yang4",
+  "其他": "qi1 ta1", "每個": "mei3 ge4", "任何": "ren2 he2", "所有": "suo3 you3",
+  "各種": "ge3 zhong3",
+  "乜嘢": "mie2 ye3", "咩": "mie1", "啫": "zhe2", "喺": "hai4",
+  "啦": "la", "喇": "la", "㗎": "jia4", "吖": "a", "喎": "wa",
+  "嘛": "ma", "囉": "luo", "喂": "wei4", "唉": "ai4", "喔": "o",
+  "啊": "a", "呀": "ya", "呢": "ni", "個": "ge",
+  "多謝": "duo1 xie4", "唔該": "wu2 gai1", "再見": "zai4 jian4",
+  "早安": "zao3 an1", "晚安": "wan3 an1", "唔該晒": "wu2 gai1 sai3",
+  "埋單": "mai2 dan1", "食飯未": "shi2 fan4 wei4", "邊度": "bian1 du4",
+  "咁好": "gan3 hao3", "點解": "dian3 jie3", "幾時": "ji3 shi2",
+  "唔使": "wu2 sai3", "冇問題": "mao5 wen4 ti2", "可以": "ke3 yi3",
+  "一定": "yi1 ding4", "可能": "ke3 neng2", "應該": "ying1 gai1",
+  "不如": "bu4 ru2", "好似": "hao3 si4", "因為": "yin1 wei4",
+  "所以": "suo3 yi3", "但是": "dan4 shi4", "或者": "huo4 zhe3",
+  "而且": "er4 qie3", "雖然": "sui1 ran2", "如果": "ru2 guo3",
+  "即使": "ji2 shi3", "無論": "wu2 lun4", "而家": "er2 jia1",
+  "依家": "yi1 jia1", "啱啱": "yan2 yan2",
+  "手": "shou3", "腳": "jiao3", "頭": "tou2", "面": "mian4", "眼": "yan3",
+  "耳": "er3", "鼻": "bi2", "嘴": "zui3", "牙": "ya2", "舌": "she2",
+  "頸": "jing3", "膊": "bo2", "心": "xin1", "肝": "gan1", "腸": "chang2",
+  "肚": "du4", "背": "bei4", "腿": "tui3", "膝": "xi1", "腰": "yao1",
+  "胸": "xiong1", "肩": "jian1", "喉": "hou2", "骨": "gu3", "肉": "rou4",
+  "血": "xue3", "皮": "pi2",
+};
+
+// 例句库
+const EXAMPLES: Record<string, string> = {
+  "我": "我係学生。ngo5 hai6 hok3 sāng4.",
+  "你": "你點呀？nei5 dim2 aa3?",
+  "佢": "佢去學校。kwai5 heoi3 hok6 haau6.",
+  "好": "好呀！hou2 aa3!",
+  "唔好": "唔好意思。m4 hou2 ji1 si1.",
+  "多謝": "多謝你！do1 ze6 nei5!",
+  "唔該": "唔該晒。m4 gor1 syu3.",
+  "再見": "再見！zoi3 gin3!",
+  "食飯": "食飯未？sik6 faan6 mei6?",
+  "幾多": "幾多錢？gei2 do1 cin2?",
+  "邊度": "邊度咁近？bin1 dou6 gam3 zeon3?",
+  "咁好": "咁好呀！gam3 hou2 aa3!",
+  "點解": "點解唔來？den2 gae2 m4 loi4?",
+  "幾時": "幾時去？gei2 si4 heoi3?",
+  "係": "我係老師。ngo5 hai6 lou1 si1.",
+  "唔": "唔該，我唔想去。m4 gor1, ngo5 m4 heoi3 syu1.",
+  "知": "我知道。zi1 ngo5 zi1.",
+  "叫": "佢叫小明。kwai5 giu3 siu4 ming4.",
+  "去": "你去邊度？nei5 heoi3 bin1 dou6?",
+  "睇": "我睇電視。ngo5 tai2 din6 si6.",
+  "食": "我食飯。ngo5 sik6 faan6.",
+  "飲": "飲水。yam2 seoi2.",
+  "買": "買嘢。maai5 je5.",
+  "俾": "俾錢。bei2 cin2.",
+  "見": "見你。gin3 nei5.",
+  "行": "行路。haang4 lou6.",
+  "返": "返屋企。faan1 u5 keoi2.",
+  "著": "着衫。zoek3 saan1.",
+  "聽": "聽歌。teng1 go1.",
+  "諗": "諗住。naam2 zyu6.",
+  "問": "問你。man6 nei5.",
+  "講": "講嘢。gong2 je5.",
+  "寫": "寫信。sie2 san3.",
+  "讀": "讀書。douk6 syu1.",
+  "玩": "玩野。waan5 je5.",
+  "做": "做野。zo3 je5.",
+  "唱": "唱歌。coeng3 go1.",
+  "收": "收信。sau1 san3.",
+  "開": "開門。hoi1 mun4.",
+  "閂": "閂門。min1 mun4.",
+  "拎": "拎畀我。ling1 bei2 ngo5.",
+  "攞": "攞錢。lo5 cin2.",
+  "走": "走喇。zau2 laa3.",
+  "起": "起身。hei2 san1.",
+  "落": "落樓。luk6 lau4.",
+  "過": "過馬路。gwo3 maa5 lou6.",
+  "入": "入去。jap6 heoi3.",
+  "出": "出去。ceot1 heoi3.",
+  "上": "上手。soeng6 syu2.",
+  "下": "下樓。haa6 lau4.",
+  "左": "向左轉。zo2 hong6 zbueun2.",
+  "右": "向右轉。jau5 hong6 zbueun2.",
+  "前": "前面。cin4 min6.",
+  "後": "後邊。haau6 bin1.",
+  "內": "入面。jap6 min6.",
+  "外": "外面。ngoi6 min6.",
+  "邊": "邊度？bin1 dou6?",
+  "度": "呢度。ne1 dou6.",
+  "時": "時間。si4 gān1.",
+  "間": "間房。gān1 fong4.",
+  "天": "今日。gaan1 tin1.",
+  "日": "今日。gaan1 jat6.",
+  "夜": "今晚。go3 je6.",
+  "朝": "朝早。ziu1 zou2.",
+  "早": "早呀。zou2 aa3.",
+  "晏": "好晏。hou2 aan6.",
+  "而家": "而家點呀。ji4 gaa1 dim2 aa3.",
+  "依家": "依家點呀。ji1 gaa1 dim2 aa3.",
+  "啱啱": "啱啱至到。naam1 naam1 zi3 dou6.",
+  "靚": "好靚。hou2 leung6.",
+  "醜": "好醜。hou2 cau2.",
+  "熱": "好熱。hou2 re3.",
+  "凍": "好凍。hou2 dung6.",
+  "渴": "好渴。hou2 hut3.",
+  "餓": "好餓。hou2 o3.",
+  "累": "好累。hou2 lui6.",
+  "飽": "好飽。hou2 bou2.",
+  "濕": "好濕。hou2 saap6.",
+  "乾": "好乾。hou2 gon1.",
+  "輕": "好輕。hou2 hing1.",
+  "重": "好重。hou2 zung6.",
+  "大": "好大。hou2 daai6.",
+  "細": "好細。hou2 sai3.",
+  "多": "好都。hou2 jau5.",
+  "少": "好少。hou2 siu2.",
+  "長": "好長。hou2 cong4.",
+  "短": "好短。hou2 dyun5.",
+  "新": "好新。hou2 san1.",
+  "舊": "好舊。hou2 gau3.",
+  "遠": "好遠。hou2 jyun5.",
+  "近": "好近。hou2 zeon3.",
+  "高": "好高。hou2 gou1.",
+  "低": "好低。hou2 dai1.",
+  "直": "好直。hou2 zik6.",
+  "彎": "好彎。hou2 waan1.",
+  "硬": "好硬。hou2 ngeng5.",
+  "軟": "好軟。hou2 jyun5.",
+  "滑": "好滑。hou2 waat6.",
+  "澀": "好澀。hou2 saap9.",
+  "苦": "好苦。hou2 hou2.",
+  "酸": "好酸。hou2 syun1.",
+  "甜": "好甜。hou2 tim4.",
+  "辣": "好辣。hou2 lat6.",
+  "鮮": "好鮮。hou2 sin1.",
+  "腥": "好腥。hou2 sing1.",
+  "香": "好香。hou2 hiong1.",
+  "臭": "好臭。hou2 cau3.",
+  "淡": "好淡。hou2 daam6.",
+  "濃": "好濃。hou2 nung4.",
+  "淨": "好淨。hou2 zing3.",
+  "濁": "好濁。hou2 jyuk6.",
+  "亂": "好亂。hou2 lyun6.",
+  "齊": "好齊。hou2 cwai4.",
+  "同": "同心。tung4 sam1.",
+  "唔同": "唔同我。m4 tung4 ngo5.",
+  "似": "好似。hou2 ci5.",
+  "正": "正呀。zing3 aa3.",
+  "勁": "好勁。hou2 ging3.",
+  "犀利": "好犀利。hou2 haai1 lik6.",
+  "抵": "好抵。hou2 di2.",
+  "難": "好難。hou2 gaan4.",
+  "易": "好易。hou2 ig1.",
+  "快": "好快。hou2 faai3.",
+  "慢": "好慢。hou2 maam6.",
+  "穩": "好穩。hou2 wan2.",
+  "險": "好險。hou2 him2.",
+  "安": "好安。hou2 on1.",
+  "危": "好危。hou2 wai4.",
+  "富": "好富。hou2 fu6.",
+  "窮": "好窮。hou2 kwing4.",
+  "貴": "好貴。hou2 goi3.",
+  "平": "好平。hou2 pieng4.",
+  "值": "好值。hou2 zik6.",
+  "便": "好便。hou2 bin6.",
+  "幾": "幾好。gei2 hou2.",
+  "點": "點呀。den2 aa3.",
+  "點樣": "點樣呀。den2 joeng6 aa3.",
+  "咁": "咁大。gam3 daai6.",
+  "咁樣": "咁樣呀。gam3 joeng6 aa3.",
+  "邊個": "邊個去。bin1 go3 heoi3.",
+  "乜嘢": "乜嘢呀。mah6 je5 aa3.",
+  "咩": "咩呀。me1 aa3.",
+  "啫": "啫呀。ze1 aa3.",
+  "啦": "好啦。hou2 laa1.",
+  "喇": "啦喇。laa1 laa3.",
+  "㗎": "真係㗎。jan1 hai6 gaa3.",
+  "吖": "吖呀。a1 aa3.",
+  "喎": "喎呀。wɔ1 aa3.",
+  "嘛": "嘛呀。mɔ1 aa3.",
+  "囉": "囉呀。lo1 aa3.",
+  "喂": "喂呀。wai3 aa3.",
+  "唉": "唉呀。aai3 aa3.",
+  "喔": "喔呀。ok3 aa3.",
+  "啊": "啊呀。a3 aa3.",
+  "呀": "呀呀。aa1 aa3.",
+  "呢": "呢個。ni1 go3.",
+  "個": "本書。ban2 syu1.",
+  "支": "支筆。zi1 bat1.",
+  "張": "張紙。zoeng1 zi2.",
+  "條": "條繩。tiu4 sing4.",
+  "架": "架車。gaa3 ce1.",
+  "部": "部電腦。bou6 dinaau6.",
+  "本": "本書。ban2 syu1.",
+  "件": "件衫。gin3 saan1.",
+  "粒": "粒糖。lap1 tong4.",
+  "塊": "塊餅。faai3 beng2.",
+  "碗": "碗飯。waan2 faan6.",
+  "杯": "杯水。beoi1 seoi2.",
+  "隻": "隻狗。zik1 gau2.",
+  "頭": "頭牛。tau4 nau4.",
+  "尾": "尾魚。mei5 jyu4.",
+  "對": "對鞋。deoi3 haai4.",
+  "手": "舉手。gyu2 seus2.",
+  "腳": "腳腫。gok3 zung2.",
+  "面": "見面。gin3 min6.",
+  "眼": "眼瞓。jyun5 fan2.",
+  "耳": "耳仔。jyi5 zai2.",
+  "鼻": "嗅鼻。sau5 bai4.",
+  "嘴": "張嘴。zaang1 zeoi2.",
+  "牙": "牙痛。jaa4 tung4.",
+  "舌": "伸舌。san1 sit6.",
+  "頸": "頸痛。gang2 tung4.",
+  "膊": "膊頭。bo3 tau4.",
+  "肩": "肩膊。gin1 bo3.",
+  "心": "心痛。sam1 tung4.",
+  "肝": "肝火。gan1 feu2.",
+  "腸": "腸胃。coeng4 mei6.",
+  "肚": "肚痛。dou6 tung4.",
+  "背": "背痛。bak3 tung4.",
+  "腿": "條腿。tiu4 teoi2.",
+  "膝": "膝頭。sap1 tau4.",
+  "腰": "腰痠。jiu1 syun1.",
+  "胸": "胸口。hung1 hau2.",
+  "喉": "喉嚨。hau4 lʊŋ4.",
+  "骨": "骨痛。gut3 tung4.",
+  "肉": "食肉。sik6 juk6.",
+  "血": "流血。flut1 syut3.",
+  "皮": "皮膚。fei1 fu4.",
+};
+
+// ============================================================
+// 工具函数
+// ============================================================
+
+function isCJK(char: string): boolean {
+  const code = char.codePointAt(0);
+  return code !== undefined && code >= 0x4E00 && code <= 0x9FFF;
+}
+
+function getJyutping(char: string): string {
+  return JYUTPING[char] || '';
+}
+
+function getPinyin(char: string): string {
+  return PINYIN_MAP[char] || '';
+}
+
+function getExample(char: string): string {
+  return EXAMPLES[char] || '';
+}
+
+/**
+ * 将中文文本转换为带声调数字的 Jyutping 标注
+ */
+function convertToJyutping(text: string): string {
+  const result: string[] = [];
+  let i = 0;
+
+  while (i < text.length) {
+    // 尝试匹配双字词
+    if (i + 1 < text.length) {
+      const twoChar = text.substring(i, i + 2);
+      if (JYUTPING[twoChar]) {
+        result.push(`${twoChar}/${JYUTPING[twoChar]}`);
+        i += 2;
+        continue;
+      }
+    }
+
+    // 单字匹配
+    const char = text[i];
+    if (JYUTPING[char]) {
+      result.push(`${char}/${JYUTPING[char]}`);
+    } else if (isCJK(char)) {
+      result.push(char);
+    } else {
+      result.push(char);
+    }
+    i++;
+  }
+
+  return result.join('');
+}
+
+/**
+ * 将中文文本转换为普通话拼音标注
+ */
+function convertToPinyin(text: string): string {
+  const result: string[] = [];
+
+  for (const char of text) {
+    if (isCJK(char)) {
+      const py = PINYIN_MAP[char] || char;
+      result.push(`${char}/${py}`);
+    } else {
+      result.push(char);
+    }
+  }
+
+  return result.join('');
+}
+
+/**
+ * 导出 CSV 对照表
+ */
+function exportCSV(text: string, outputPath: string): void {
+  const lines: string[] = ['hanzi,jyutping,pinyin,example_jyutping'];
+
+  for (const char of text) {
+    if (isCJK(char)) {
+      const jyut = getJyutping(char);
+      const py = getPinyin(char);
+      const example = getExample(char) || `${char}${char}`;
+      lines.push(`${char},${jyut},${py},${example}`);
+    }
+  }
+
+  fs.writeFileSync(outputPath, lines.join('\n'), 'utf8');
+  console.log(`[OK] CSV 已导出至：${outputPath}`);
+}
+
+/**
+ * 导出 Anki CSV 牌组
+ */
+function exportAnkiDeck(text: string, outputPath: string): void {
+  const lines: string[] = ['Hanzi,Jyutping,Pinyin,Example'];
+
+  for (const char of text) {
+    if (isCJK(char)) {
+      const jyut = getJyutping(char);
+      const py = getPinyin(char);
+      const example = getExample(char);
+      lines.push(`${char},${jyut},${py},${example}`);
+    }
+  }
+
+  fs.writeFileSync(outputPath, lines.join('\n'), 'utf8');
+  console.log(`[OK] Anki CSV 已导出至：${outputPath}`);
+  console.log('     导入方式：Anki → 文件 → 导入 → 选择此 CSV');
+}
+
+/**
+ * 解析命令行参数
+ */
+function parseArgs(): { text: string; mode: 'csv' | 'anki' | null; output: string } {
+  const args = process.argv.slice(2);
+  let text = '';
+  let mode: 'csv' | 'anki' | null = null;
+  let output = '';
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--csv') {
+      mode = 'csv';
+      i++;
+      if (i < args.length) output = args[i];
+    } else if (args[i] === '--anki') {
+      mode = 'anki';
+      i++;
+      if (i < args.length) output = args[i];
+    } else {
+      text += args[i] + ' ';
+    }
+  }
+
+  return { text: text.trim(), mode, output };
+}
+
+// ============================================================
+// 主函数
+// ============================================================
+function main(): void {
+  console.log('='.repeat(50));
+  console.log('  Cantonese Jyutping 工具 v1.0 (TypeScript)');
+  console.log('='.repeat(50));
+  console.log();
+  console.log('用法：');
+  console.log('  node jyutping_tool.js [文本]');
+  console.log('  node jyutping_tool.js --csv 输出.csv [文本]');
+  console.log('  node jyutping_tool.js --anki 输出.csv [文本]');
+  console.log('  node jyutping_tool.js --help');
+  console.log();
+
+  const { text, mode, output } = parseArgs();
+
+  if (!text || process.argv.includes('--help')) {
+    console.log('示例：');
+    console.log('  node jyutping_tool.js "你好我好大家"');
+    console.log('  node jyutping_tool.js "我係广州人" --csv output.csv');
+    console.log('  node jyutping_tool.js "啱啱食咗饭未" --anki anki.csv');
+    return;
+  }
+
+  if (!text) {
+    console.log('[ERROR] 请提供中文文本');
+    return;
+  }
+
+  console.log(`输入文本：${text}`);
+  console.log();
+
+  // Jyutping 转换
+  const jyutResult = convertToJyutping(text);
+  console.log('Jyutping 标注：');
+  console.log(jyutResult);
+  console.log();
+
+  // Pinyin 转换
+  const pyResult = convertToPinyin(text);
+  console.log('普通话拼音：');
+  console.log(pyResult);
+  console.log();
+
+  // 导出
+  if (mode === 'csv' && output) {
+    exportCSV(text, output);
+  } else if (mode === 'anki' && output) {
+    exportAnkiDeck(text, output);
+  }
+}
+
+main();

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>粤语学习工具 - Cantonese Learning</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎙️ 粤语学习工具</h1>
+      <p class="subtitle">点击汉字听发音 · 可视化声调学习</p>
+    </header>
+
+    <!-- 输入区域 -->
+    <section class="input-section">
+      <div class="input-wrapper">
+        <textarea id="textInput" placeholder="输入中文文本，如：你好我好大家..." rows="3"></textarea>
+        <button id="analyzeBtn" class="btn-primary">🔍 分析拼音</button>
+      </div>
+    </section>
+
+    <!-- 可视化结果 -->
+    <section class="result-section" id="resultSection" style="display:none;">
+      <h2>📊 Jyutping 拼音标注</h2>
+      <div id="visualOutput" class="visual-output"></div>
+      
+      <!-- 句子播放按钮 -->
+      <div class="sentence-controls">
+        <button id="playSentenceBtn" class="btn-secondary">▶️ 整句播放</button>
+        <button id="slowPlayBtn" class="btn-secondary">🐢 慢速播放</button>
+      </div>
+    </section>
+
+    <!-- 声调参考表 -->
+    <section class="tone-section">
+      <h2>🎵 粤语六调对照表</h2>
+      <div class="tone-table">
+        <div class="tone-row" data-tone="1">
+          <div class="tone-badge tone-1">1</div>
+          <div class="tone-info">
+            <strong>高平调</strong>
+            <span>调值 55</span>
+            <span class="tone-example">例：诗 si1</span>
+          </div>
+          <button class="tone-play-btn" data-text="诗">🔊 听发音</button>
+        </div>
+        <div class="tone-row" data-tone="2">
+          <div class="tone-badge tone-2">2</div>
+          <div class="tone-info">
+            <strong>高升调</strong>
+            <span>调值 35</span>
+            <span class="tone-example">例：史 si2</span>
+          </div>
+          <button class="tone-play-btn" data-text="史">🔊 听发音</button>
+        </div>
+        <div class="tone-row" data-tone="3">
+          <div class="tone-badge tone-3">3</div>
+          <div class="tone-info">
+            <strong>中平调</strong>
+            <span>调值 33</span>
+            <span class="tone-example">例：试 si3</span>
+          </div>
+          <button class="tone-play-btn" data-text="试">🔊 听发音</button>
+        </div>
+        <div class="tone-row" data-tone="4">
+          <div class="tone-badge tone-4">4</div>
+          <div class="tone-info">
+            <strong>低降调</strong>
+            <span>调值 21</span>
+            <span class="tone-example">例：是 si4</span>
+          </div>
+          <button class="tone-play-btn" data-text="是">🔊 听发音</button>
+        </div>
+        <div class="tone-row" data-tone="5">
+          <div class="tone-badge tone-5">5</div>
+          <div class="tone-info">
+            <strong>低升调</strong>
+            <span>调值 23</span>
+            <span class="tone-example">例：屎 si5</span>
+          </div>
+          <button class="tone-play-btn" data-text="屎">🔊 听发音</button>
+        </div>
+        <div class="tone-row" data-tone="6">
+          <div class="tone-badge tone-6">6</div>
+          <div class="tone-info">
+            <strong>低平调</strong>
+            <span>调值 22</span>
+            <span class="tone-example">例：事 si6</span>
+          </div>
+          <button class="tone-play-btn" data-text="事">🔊 听发音</button>
+        </div>
+      </div>
+      <p class="tone-note">💡 点击「听发音」按钮，或点击拼音卡片中的汉字可播放粤语发音</p>
+    </section>
+
+    <!-- 导出功能 -->
+    <section class="export-section">
+      <h2>📥 导出数据</h2>
+      <div class="export-buttons">
+        <button id="exportCsvBtn" class="btn-export" disabled>📄 导出 CSV 对照表</button>
+        <button id="exportAnkiBtn" class="btn-export" disabled>🃏 导出 Anki 牌组</button>
+      </div>
+    </section>
+
+    <!-- 示例文本 -->
+    <section class="examples-section">
+      <h2>💬 示例文本</h2>
+      <div class="examples-grid">
+        <button class="example-btn" data-text="你好我好大家">你好我好大家</button>
+        <button class="example-btn" data-text="我係广州人">我係广州人</button>
+        <button class="example-btn" data-text="食饭未呀">食饭未呀</button>
+        <button class="example-btn" data-text="几多钱">几多钱</button>
+        <button class="example-btn" data-text="边度咁近">边度咁近</button>
+        <button class="example-btn" data-text="点解唔来">点解唔来</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="jyutping_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
