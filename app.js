@@ -181,14 +181,16 @@ class CantoneseApp {
   }
 
   analyzeText() {
-    const text = this.textInput.value.trim();
+    let text = this.textInput.value.trim();
     if (!text) {
       alert('请输入中文文本');
       return;
     }
 
-    this.currentText = text;
-    this.currentJyutping = this.convertToJyutping(text);
+    // 简繁转换：简体输入 -> 繁体字典匹配
+    const traditionalText = convertSimplifiedToTraditional(text);
+    this.currentText = traditionalText;
+    this.currentJyutping = this.convertToJyutping(traditionalText);
     this.renderVisual();
     this.resultSection.style.display = 'block';
     this.resultSection.classList.add('fade-in');
