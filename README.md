@@ -12,7 +12,7 @@
 
 ## 在线演示
 
-👉 [访问部署版本](https://humuchen.github.io/cantonese-learning-tool)
+👉 [访问部署版本](https://cantonese-learning.onrender.com)
 
 ## 本地运行
 
