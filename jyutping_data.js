@@ -91,6 +91,21 @@ const JYUTPING = {
   "流汗": "lau4 hon6", "流淚": "lau4 lei6",
   "口渴": "kut3 ho2", "肚餓": "dou6 o3", "肚企": "dou6 keoi2",
   "失眠": "sat3 min4",
+  // 城市/地点
+  "广州": "gong2 zau2", "北京": "bak1 gong1", "上海": "soeng5 ho2",
+  "城市": "sing4 ci6", "地方": "dei6 fong1",
+  // 食物
+  "饭": "faan6", "吃饭": "sik6 faan6", "食物": "sik6 mat6",
+  "苹果": "ping4 gwo2", "香蕉": "hoeng1 jo1", "西瓜": "sai1 gwo1",
+  "饮料": "jam6 lio2", "水": "seoi2", "酒": "zau2",
+  "茶": "ca4", "咖啡": "gaa1 fei1", "牛奶": "ngau5 noi5",
+  // 日常用品
+  "钱": "cin2", "多少钱": "gei2 do1 cin2", "便宜": "pin4 haai4",
+  "贵": "gwai3", "买": "maai5", "卖": "maai6", "商店": "sin1 di2",
+  "在": "zoi6", "在哪里": "zoi6 bin1 dou6",
+  "吃": "sik6", "好食": "hou2 sik6", "好吃": "hou2 sik6",
+  "什么": "sam1 mo1", "什么东西": "sam1 mo1 je5",
+  "里": "lei5", "这里": "ni1 dei6", "那里": "naa5 dei6",
 };
 
 // ============================================================
@@ -575,5 +590,5 @@ const PINYIN_MAP = {
   "頸": "jing3", "膊": "bo2", "心": "xin1", "肝": "gan1", "腸": "chang2",
   "肚": "du4", "背": "bei4", "腿": "tui3", "膝": "xi1", "腰": "yao1",
   "胸": "xiong1", "肩": "jian1", "喉": "hou2", "骨": "gu3", "肉": "rou4",
-  "血": "xue3", "皮": "pi2",
+  "血": "hyut3", "皮": "pai4",
 };
