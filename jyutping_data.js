@@ -1,9 +1,12 @@
 // 粤语 Jyutping 数据（从 TypeScript 版本提取）
 // 支持简繁转换
 const JYUTPING = {
+  // 基础代词/动词
   "我": "ngo5", "你": "nei5", "佢": "kwai5", "他": "taa1", "她": "taa1", "它": "taa1",
   "我哋": "ngo5 dei6", "你哋": "nei5 dei6", "佢哋": "kwai5 dei6",
   "自己": "zi6 gei2", "大家": "daai6 gaa1", "邊個": "bin1 go3",
+  "呢": "ni1", "個": "go3", "嘢": "je5", "樣": "joeng6", "啲": "di1",
+  "這": "ni1", "那": "naa5", "嗰": "go2",
   "係": "hai6", "唔": "m4", "知": "zi1", "叫": "giu3", "去": "heoi3",
   "睇": "tai2", "食": "sik6", "飲": "yam2", "買": "maai5", "俾": "bei2",
   "見": "gin3", "行": "haang4", "返": "fan1", "着": "zoek3", "聽": "teng1",
@@ -91,21 +94,166 @@ const JYUTPING = {
   "流汗": "lau4 hon6", "流淚": "lau4 lei6",
   "口渴": "kut3 ho2", "肚餓": "dou6 o3", "肚企": "dou6 keoi2",
   "失眠": "sat3 min4",
-  // 城市/地点
-  "广州": "gong2 zau2", "北京": "bak1 gong1", "上海": "soeng5 ho2",
-  "城市": "sing4 ci6", "地方": "dei6 fong1",
+  // 常用字补充
+  "今": "gam1", "天": "tin1", "气": "hei3", "天气": "tin1 hei3",
+  "们": "man5", "了": "liu5", "的": "dik1",
+  "就": "zau6", "又": "jau5", "都": "dou1", "很": "han2",
+  "会": "wui5", "可以": "ho2 ji5", "要": "jiu3",
+  // 简单词
+  "好": "hou2", "坏": "waai5", "大": "daai6", "小": "siu2",
+  "多": "do1", "少": "sou2", "新": "san1", "旧": "gau2",
+  "快": "faai3", "慢": "maan6", "高": "gou1", "低": "dai1",
+  "长": "coeng4", "短": "dyun2", "宽": "hoon1", "窄": "zaai2",
+  "重": "zung3", "轻": "hing1", "远": "jyun5", "近": "zeon3",
+  "贵": "gwai3", "便宜": "pin4 haai4",
+  "冷": "laang5", "热": "jit6", "干": "gon1", "湿": "sat1",
+  "黑": "hak1", "白": "baak3", "红": "hung4", "蓝": "laam4",
+  "黄": "wong4", "绿": "luk1", "紫": "zeoi2",
+  "男": "naam4", "女": "neoi5", "男": "naam4", "女": "neoi5",
+  "老": "lou5", "少": "siu2", "年轻": "jing1hing1",
+  "美丽": "mei5lai5", "漂亮": "piu3laai6",
+  "干净": "gan1cung3", "干净": "gan1cung3",
+  "快乐": "fai1lok6", "开心": "hoi1sam1", "高兴": "gau1hing3",
+  "辛苦": "han1sau2", "舒服": "seoi1fu4",
+  "害怕": "hoi3paai3", "担心": "daam1sam1", "生气": "saang1ci3",
+  "喜欢": "seoi2fan1", "爱": "oi3",
+  "想": "soeng2", "知": "zi1", "知道": "zi1dou3",
+  "见": "gin3", "等": "dang2", "问": "man6", "答": "daap6",
+  "帮": "bong1", "帮忙": "bong1mang4",
+  "送": "sung3", "接": "zip3", "买": "maai5", "卖": "maai6",
+  "用": "jung6", "做": "zo3", "弄": "nang5",
+  "听": "ting1", "讲": "gong2", "说": "syut3",
+  "读": "duk6", "写": "sie2", "画": "waa6", "唱": "coeng3",
+  "跳": "tiu3", "走": "zau2", "行": "haang4", "坐": "co3",
+  "站": "zaam6", "睡": "seoi3", "醒": "sing2", "起": "hei2",
+  "落": "lok6", "返": "faan1", "来": "loi4", "去": "heoi3",
+  "出": "ceot1", "入": "jap6",
+  "开": "hoi1", "关": "gyun1", "切": "cit3",
+  "饮": "jam2", "食": "sik6",
+  // 量词
+  "个": "go3", "只": "zik1", "支": "zi1", "条": "tiu4",
+  "张": "zoeng1", "本": "ban2", "间": "gaan3",
+  "件": "gin3", "粒": "lap1", "块": "faai3", "碗": "waan2",
+  "杯": "beoi1", "套": "tao3", "对": "deoi3", "份": "fan3",
+  // 名词
+  "人": "jan4", "手": "sau2", "脚": "goek3", "头": "tau4",
+  "面": "min6", "眼": "ngaan5", "耳": "jyi5", "鼻": "bai4",
+  "嘴": "zeoi2", "牙": "ngaa4", "舌": "sit6", "颈": "gang2",
+  "膊": "bok3", "心": "sam1", "肝": "gaa1", "肠": "coeng4",
+  "肚": "dou6", "背": "bak3", "腿": "tui5", "膝": "sap1",
+  "腰": "jiu1", "胸": "hung1", "肩": "gaan1", "喉": "hau4",
+  "骨": "gwat3", "肉": "juk6", "血": "hyut3", "皮": "pai4",
+  // 代词
+  "这": "zi2", "那": "naa5", "我": "ngo5", "你": "nei5",
+  "他": "taa1", "她": "taa1", "它": "taa1",
+  "自己": "zi6gei2", "大家": "daai6gaa1",
+  // 副词
+  "很": "han2", "好": "hou2", "太": "taai3", "非常": "fei1soeng4",
+  "都": "dou1", "就": "zau6", "才": "coi4", "已经": "ji5ging1",
+  "正在": "zing3hoi6", "再": "zoi3", "又": "jau5",
+  // 连词/介词
+  "和": "wo4", "或": "wut6", "但": "daan6", "因为": "jan1wai6",
+  "所以": "sou2jai6", "如果": "jyu4gwo2", "虽然": "sui1jin4",
+  "但是": "daai6gam6", "然后": "jin4hau6",
+  // 方位词
+  "上": "soeng6", "下": "haa6", "左": "zo2", "右": "jau5",
+  "前": "cin4", "后": "haau6", "内": "noi6", "外": "ngoi6",
+  "里": "lei5", "边": "bin1", "度": "dou6",
+  // 其他常用字
+  "时": "si4", "间": "gaan3", "分": "fan1", "秒": "miu5",
+  "点": "dim2", "钟": "zung1", "岁": "seoi3",
+  "年": "nin4", "月": "jyut6", "日": "jat6", "星期": "sing1kei4",
+  "早": "zou2", "晏": "aan6", "晚": "man5",
+  "朝": "ziu1", "黄昏": "wong4fam1",
+  // 数字
+  "一": "jat1", "二": "ji6", "三": "saam1", "四": "sei3",
+  "五": "ng5", "六": "luk6", "七": "cat1", "八": "baat3",
+  "九": "gau2", "十": "sap6", "百": "baak3", "千": "cin1",
+  "万": "maan6", "零": "ling4",
+  // 颜色
+  "红": "hung4", "黄": "wong4", "蓝": "laam4", "绿": "luk1",
+  "白": "baak3", "黑": "hak1", "灰": "fui1", "紫": "zeoi2",
+  "金": "gam1", "银": "ngan4",
   // 食物
-  "饭": "faan6", "吃饭": "sik6 faan6", "食物": "sik6 mat6",
-  "苹果": "ping4 gwo2", "香蕉": "hoeng1 jo1", "西瓜": "sai1 gwo1",
-  "饮料": "jam6 lio2", "水": "seoi2", "酒": "zau2",
-  "茶": "ca4", "咖啡": "gaa1 fei1", "牛奶": "ngau5 noi5",
-  // 日常用品
-  "钱": "cin2", "多少钱": "gei2 do1 cin2", "便宜": "pin4 haai4",
-  "贵": "gwai3", "买": "maai5", "卖": "maai6", "商店": "sin1 di2",
-  "在": "zoi6", "在哪里": "zoi6 bin1 dou6",
-  "吃": "sik6", "好食": "hou2 sik6", "好吃": "hou2 sik6",
-  "什么": "sam1 mo1", "什么东西": "sam1 mo1 je5",
-  "里": "lei5", "这里": "ni1 dei6", "那里": "naa5 dei6",
+  "饭": "faan6", "面": "min6", "粥": "zau1", "粉": "fan2",
+  "菜": "coi3", "肉": "juk6", "鸡": "gai1", "鱼": "jyu4",
+  "虾": "haa1", "蛋": "daan6", "奶": "no5", "水": "seoi2",
+  "茶": "ca4", "酒": "zau2", "糖": "cong4", "盐": "jim4",
+  "油": "jau4", "酱油": "gong3yau6",
+  // 水果
+  "苹果": "ping4gwo2", "香蕉": "hoeng1jo1", "橙": "cing4",
+  "西瓜": "sai1gwo2", "提子": "tai4zi2", "梨": "lei4",
+  "桃": "tou4", "葡萄": "putou6", "芒果": "mong6gwai2",
+  "荔枝": "lei5zi1", "龙眼": "lung4gin2",
+  // 饮料
+  "饮料": "jam6liu4", "咖啡": "gaa1fe1", "奶茶": "naai4ca4",
+  "汽水": "si3seoi2", "果汁": "gwok6zoi2",
+  // 地点
+  "家": "gaa1", "屋": "uk1", "店": "di2", "街": "gaai1",
+  "路": "lou6", "公园": "gung1yuen4", "学校": "hok6haau6",
+  "医院": "ji1yuen6", "商场": "soeng1coeng4", "机场": "gaang1caang1",
+  "车站": "czan3zaam6", "码头": "maa5tou4",
+  // 时间词
+  "现在": "ji6gaa1", "以前": "ji4cin4", "之后": "ji1hau6",
+  "刚才": "gong1cit3", "曾经": "cang4gin1",
+  // 疑问词
+  "什么": "sam1mo4", "乜嘢": "mit1je5", "咩": "me1",
+  "哪里": "naa5lei5", "边度": "bin1dou6", "几多": "gei2do1",
+  "怎样": "zeon2jeung4", "点样": "dim2joeng4",
+  "为什么": "wai6sam1zik1", "点解": "dim2gaai2",
+  // 形容词
+  "好": "hou2", "坏": "waai5", "多": "do1", "少": "sou2",
+  "大": "daai6", "小": "siu2", "新": "san1", "旧": "gau2",
+  "快": "faai3", "慢": "maan6", "高": "gou1", "低": "dai1",
+  "贵": "gwai3", "平": "ping4", "难": "naan4", "易": "jik6",
+  "冷": "laang5", "热": "jit6", "干": "gon1", "湿": "sat1",
+  "甜": "tin4", "酸": "syun1", "苦": "fu2", "辣": "laat3",
+  "咸": "ham4", "香": "hoeng1", "腥": "sing1",
+  // 动词
+  "有": "jau5", "冇": "mou5", "系": "hai6", "唔使": "m4sei3",
+  "知": "zi1", "唔知": "m4zi1", "谂": "naam2",
+  "去": "heoi3", "返": "faan1", "嚟": "loi4", "走": "zau2",
+  "睇": "tai2", "听": "ting1", "讲": "gong2", "食": "sik6",
+  "饮": "jam2", "买": "maai5", "卖": "maai6", "着": "zoek3",
+  "穿": "cyun1", "着": "zoek3", "行": "haang4", "坐": "co3",
+  "睡": "seoi3", "瞓": "fan2", "谂": "naam2", "想": "soeng2",
+  // 副词
+  "好": "hou2", "几": "gei2", "太": "taai3", "非常": "fei1soeng4",
+  "都": "dou1", "就": "zau6", "先": "sin1", "後": "haau6",
+  // 语气词
+  "啦": "laa1", "喇": "laa3", "㗎": "gaa3", "呀": "aa3",
+  "啊": "aa3", "哦": "o4", "嗯": "ng4",
+  // 连词
+  "和": "wo4", "同": "tung4", "或": "wut6", "但係": "daai6hai6",
+  "因为": "jan1wai6", "所以": "sou2jai6",
+  // 量词
+  "个": "go3", "隻": "zik1", "条": "tiu4", "张": "zoeng1",
+  "本": "ban2", "间": "gaan3", "件": "gin3", "粒": "lap1",
+  "碗": "waan2", "杯": "beoi1", "对": "deoi3", "份": "fan3",
+  // 身体部位
+  "头": "tau4", "面": "min6", "眼": "ngaan5", "耳": "jyi5",
+  "鼻": "bai4", "嘴": "zeoi2", "牙": "ngaa4", "舌": "sit6",
+  "颈": "gang2", "膊": "bok3", "手": "sau2", "肚": "dou6",
+  "背": "bak3", "腿": "tui5", "膝": "sap1", "脚": "goek3",
+  "心": "sam1", "肝": "gaa1", "肠": "coeng4", "肺": "feoi3",
+  "胃": "mei6", "骨": "gwat3", "肉": "juk6", "血": "hyut3",
+  "皮": "pai4", "汗": "hon6", "泪": "lui6",
+  // 疾病
+  "发烧": "faat3siu1", "感冒": "gon2mou2", "咳嗽": "hau1sau3",
+  "鼻敏感": "bai4man3gan4", "敏感": "man5gon3",
+  "头痛": "tau4tung4", "胃痛": "meitung4", "背痛": "baaktung4",
+  // 时间单位
+  "时": "si4", "钟": "zung1", "分": "fan1", "秒": "miu5",
+  "日": "jat6", "朝": "ziu1", "午": "ng5", "晚": "man5",
+  "夜": "je6", "黎明": "lai4ming4", "黄昏": "wong4fam1",
+  // 数量表达
+  "一": "jat1", "两": "loeng5", "几": "gei2", "多": "do1",
+  "少": "sou2", "全": "cyun4", "半": "buin3",
+  "几多个": "gei2go3do1", "几多钱": "gei2do1cin2",
+  // 形容词 + 名词
+  "好吃": "hou2sik6", "难食": "naan4sik6", "好睇": "hou2tai2",
+  "好聽": "hou2ting1", "好闻": "hou2man4", "好食": "hou2sik6",
+  "好饮": "hou2jam2", "好穿": "hou2cyun1",
 };
 
 // ============================================================
